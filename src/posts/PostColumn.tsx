@@ -1,3 +1,4 @@
+import { Droppable } from "@hello-pangea/dnd";
 import { Box, Typography } from "@mui/material";
 
 import type { Post } from ".";
@@ -30,17 +31,28 @@ export const PostColumn = ({
     <Typography align="center" variant="subtitle1">
       {statusNames[status]}
     </Typography>
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        borderRadius: 5,
-        padding: "5px",
-      }}
-    >
-      {posts.map((post) => (
-        <PostCard key={post.id} post={post} />
-      ))}
-    </Box>
+    <Droppable droppableId={status}>
+      {(droppableProvided, snapshot) => (
+        <Box
+          ref={droppableProvided.innerRef}
+          {...droppableProvided.droppableProps}
+          className={snapshot.isDraggingOver ? " isDraggingOver" : ""}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            borderRadius: 5,
+            padding: "5px",
+            "&.isDraggingOver": {
+              bgcolor: "#dadadf",
+            },
+          }}
+        >
+          {posts.map((post) => (
+            <PostCard key={post.id} post={post} />
+          ))}
+          {droppableProvided.placeholder}
+        </Box>
+      )}
+    </Droppable>
   </Box>
 );
