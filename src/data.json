@@ -3,62 +3,86 @@
     {
       "id": 0,
       "title": "Post 1",
-      "content": "Content 1"
+      "content": "Content 1",
+      "status": "draft",
+      "index": 0
     },
     {
       "id": 1,
       "title": "Post 2",
-      "content": "Content 2"
+      "content": "Content 2",
+      "status": "to_review",
+      "index": 0
     },
     {
       "id": 2,
       "title": "Post 3",
-      "content": "Content 3"
+      "content": "Content 3",
+      "status": "published",
+      "index": 0
     },
     {
       "id": 3,
       "title": "Post 4",
-      "content": "Content 4"
+      "content": "Content 4",
+      "status": "to_publish",
+      "index": 0
     },
     {
       "id": 4,
       "title": "Post 5",
-      "content": "Content 5"
+      "content": "Content 5",
+      "status": "draft",
+      "index": 1
     },
     {
       "id": 5,
       "title": "Post 6",
-      "content": "Content 6"
+      "content": "Content 6",
+      "status": "draft",
+      "index": 2
     },
     {
       "id": 6,
       "title": "Post 7",
-      "content": "Content 7"
+      "content": "Content 7",
+      "status": "to_be_fixed",
+      "index": 0
     },
     {
       "id": 7,
       "title": "Post 8",
-      "content": "Content 8"
+      "content": "Content 8",
+      "status": "published",
+      "index": 1
     },
     {
       "id": 8,
       "title": "Post 9",
-      "content": "Content 9"
+      "content": "Content 9",
+      "status": "published",
+      "index": 2
     },
     {
       "id": 9,
       "title": "Post 10",
-      "content": "Content 10"
+      "content": "Content 10",
+      "status": "to_review",
+      "index": 1
     },
     {
       "id": 10,
       "title": "Post 11",
-      "content": "Content 11"
+      "content": "Content 11",
+      "status": "to_publish",
+      "index": 1
     },
     {
       "id": 11,
       "title": "Post 12",
-      "content": "Content 12"
+      "content": "Content 12",
+      "status": "to_review",
+      "index": 2
     }
   ],
   "comments": [
