@@ -26,6 +26,9 @@ export const PostCard = ({ post }: { post: Post }) => {
                 {post.title}
               </Typography>
               <Typography variant="body2">{post.content}</Typography>
+              <Typography sx={{ fontSize: 10 }} color="text.secondary">
+                {`Index: ${post.index}`}
+              </Typography>
             </CardContent>
             <CardActions>
               <ShowButton resource="posts" record={post} />

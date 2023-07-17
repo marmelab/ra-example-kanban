@@ -4,7 +4,12 @@ import { PostListContent } from ".";
 
 export const PostList = () => {
   return (
-    <List perPage={100} pagination={false} component="div">
+    <List
+      perPage={100}
+      sort={{ field: "index", order: "ASC" }}
+      pagination={false}
+      component="div"
+    >
       <PostListContent />
     </List>
   );
