@@ -1,5 +1,16 @@
 # ra-example-kanban
 
+This repository contains an example of a Kanban board built with [React Admin](https://marmelab.com/react-admin/) v4.
+
+<video controls autoplay playsinline muted loop>
+  <source src="./kanban-final.webm" type="video/webm"/>
+  Your browser does not support the video tag.
+</video>
+
+## About
+
+This project was bootstraped with [Create React Admin](https://marmelab.com/react-admin/CreateReactAdmin.html), and uses the [@hello-pangea/dnd](https://github.com/hello-pangea/dnd) library to create the Kanban board and support drag and drop features.
+
 ## Installation
 
 Install the application dependencies by running:
