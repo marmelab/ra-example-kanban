@@ -2,10 +2,7 @@
 
 This repository contains an example of a Kanban board built with [React Admin](https://marmelab.com/react-admin/) v4.
 
-<video controls autoplay playsinline muted loop>
-  <source src="./kanban-final.webm" type="video/webm"/>
-  Your browser does not support the video tag.
-</video>
+[React Admin Kanban](https://github.com/marmelab/ra-example-kanban/assets/14542336/3ab5420f-4590-4463-bd2c-d60675f5bd89)
 
 ## About
 
