@@ -58,7 +58,9 @@ export const PostListContent = () => {
     }
 
     mutation.mutateAsync({
-      source: postsByStatus[source.droppableId as Post["status"]][source.index],
+      source: postsByStatus[source.droppableId as Post["status"]].find(
+        (p) => p.index === source.index
+      )!,
       destination: {
         index: destination.index,
         status: destination.droppableId as Post["status"],
