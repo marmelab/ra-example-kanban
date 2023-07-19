@@ -65,8 +65,8 @@ export const PostListContent = () => {
     // compute local state change
     if (sourcePost.status === destinationStatus) {
       // moving deal inside the same column
-      const column = postsByStatus[sourcePost.status];
-      column.splice(source.index, 1);
+      let column = postsByStatus[sourcePost.status];
+      column = column.filter((p) => p.index !== source.index);
       column.splice(destinationIndex, 0, sourcePost);
       setPostsByStatus({
         ...postsByStatus,
@@ -74,10 +74,10 @@ export const PostListContent = () => {
       });
     } else {
       // moving deal across columns
-      const sourceColumn = postsByStatus[sourcePost.status];
+      let sourceColumn = postsByStatus[sourcePost.status];
       const destinationColumn = postsByStatus[destinationStatus];
-      sourceColumn.splice(source.index, 1);
-      destinationColumn.splice(destination.index, 0, sourcePost);
+      sourceColumn = sourceColumn.filter((p) => p.index !== source.index);
+      destinationColumn.splice(destinationIndex, 0, sourcePost);
       setPostsByStatus({
         ...postsByStatus,
         [source.droppableId]: sourceColumn,
