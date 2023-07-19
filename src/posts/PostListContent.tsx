@@ -1,15 +1,31 @@
 import { DragDropContext, OnDragEndResponder } from "@hello-pangea/dnd";
 import { Box } from "@mui/material";
+import { isEqual } from "lodash";
+import { useEffect, useState } from "react";
 import { useDataProvider, useListContext } from "react-admin";
 import { useMutation } from "react-query";
 import type { Post } from ".";
-import { statuses } from ".";
-import { PostColumn } from "./PostColumn";
+import { PostsByStatus, getPostsByStatus, statuses } from ".";
 import { MyDataProvider } from "../dataProvider";
+import { PostColumn } from "./PostColumn";
 
 export const PostListContent = () => {
   const { data: unorderedPosts, isLoading, refetch } = useListContext<Post>();
   const dataProvider = useDataProvider<MyDataProvider>();
+
+  const [postsByStatus, setPostsByStatus] = useState<PostsByStatus>(
+    getPostsByStatus([])
+  );
+
+  useEffect(() => {
+    if (unorderedPosts) {
+      const newPostsByStatus = getPostsByStatus(unorderedPosts);
+      if (!isEqual(newPostsByStatus, postsByStatus)) {
+        setPostsByStatus(newPostsByStatus);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [unorderedPosts]);
 
   const mutation = useMutation<
     void,
@@ -26,23 +42,6 @@ export const PostListContent = () => {
 
   if (isLoading) return null;
 
-  const postsByStatus: Record<Post["status"], Post[]> = unorderedPosts.reduce(
-    (acc, post) => {
-      acc[post.status].push(post);
-      return acc;
-    },
-    statuses.reduce(
-      (obj, status) => ({ ...obj, [status]: [] }),
-      {} as Record<Post["status"], Post[]>
-    )
-  );
-  // order each column by index
-  statuses.forEach((status) => {
-    postsByStatus[status] = postsByStatus[status].sort(
-      (recordA: Post, recordB: Post) => recordA.index - recordB.index
-    );
-  });
-
   const onDragEnd: OnDragEndResponder = (result) => {
     const { destination, source } = result;
 
@@ -57,13 +56,41 @@ export const PostListContent = () => {
       return;
     }
 
+    const sourcePost = postsByStatus[source.droppableId as Post["status"]].find(
+      (p) => p.index === source.index
+    )!;
+    const destinationIndex = destination.index;
+    const destinationStatus = destination.droppableId as Post["status"];
+
+    // compute local state change
+    if (sourcePost.status === destinationStatus) {
+      // moving deal inside the same column
+      const column = postsByStatus[sourcePost.status];
+      column.splice(source.index, 1);
+      column.splice(destinationIndex, 0, sourcePost);
+      setPostsByStatus({
+        ...postsByStatus,
+        [destinationStatus]: column,
+      });
+    } else {
+      // moving deal across columns
+      const sourceColumn = postsByStatus[sourcePost.status];
+      const destinationColumn = postsByStatus[destinationStatus];
+      sourceColumn.splice(source.index, 1);
+      destinationColumn.splice(destination.index, 0, sourcePost);
+      setPostsByStatus({
+        ...postsByStatus,
+        [source.droppableId]: sourceColumn,
+        [destination.droppableId]: destinationColumn,
+      });
+    }
+
+    // trigger the mutation to persist the changes
     mutation.mutateAsync({
-      source: postsByStatus[source.droppableId as Post["status"]].find(
-        (p) => p.index === source.index
-      )!,
+      source: sourcePost,
       destination: {
-        index: destination.index,
-        status: destination.droppableId as Post["status"],
+        index: destinationIndex,
+        status: destinationStatus,
       },
     });
   };

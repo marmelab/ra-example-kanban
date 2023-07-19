@@ -20,3 +20,25 @@ export const statusChoices = statuses.map((type) => ({
   id: type,
   name: statusNames[type],
 }));
+
+export type PostsByStatus = Record<Post["status"], Post[]>;
+
+export const getPostsByStatus = (unorderedPosts: Post[]) => {
+  const postsByStatus: Record<Post["status"], Post[]> = unorderedPosts.reduce(
+    (acc, post) => {
+      acc[post.status].push(post);
+      return acc;
+    },
+    statuses.reduce(
+      (obj, status) => ({ ...obj, [status]: [] }),
+      {} as Record<Post["status"], Post[]>
+    )
+  );
+  // order each column by index
+  statuses.forEach((status) => {
+    postsByStatus[status] = postsByStatus[status].sort(
+      (recordA: Post, recordB: Post) => recordA.index - recordB.index
+    );
+  });
+  return postsByStatus;
+};

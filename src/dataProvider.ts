@@ -1,7 +1,7 @@
 import fakeRestDataProvider from "ra-data-fakerest";
 import { DataProvider } from "react-admin";
 import data from "./data.json";
-import { Post, statuses } from "./posts";
+import { Post, getPostsByStatus } from "./posts";
 
 const baseDataProvider = fakeRestDataProvider(data, true);
 
@@ -23,22 +23,7 @@ export const dataProvider: MyDataProvider = {
       filter: {},
     });
 
-    const postsByStatus: Record<Post["status"], Post[]> = unorderedPosts.reduce(
-      (acc, post) => {
-        acc[post.status].push(post);
-        return acc;
-      },
-      statuses.reduce(
-        (obj, status) => ({ ...obj, [status]: [] }),
-        {} as Record<Post["status"], Post[]>
-      )
-    );
-    // order each column by index
-    statuses.forEach((status) => {
-      postsByStatus[status] = postsByStatus[status].sort(
-        (recordA: Post, recordB: Post) => recordA.index - recordB.index
-      );
-    });
+    const postsByStatus = getPostsByStatus(unorderedPosts);
 
     if (source.status === destination.status) {
       // moving post inside the same column
