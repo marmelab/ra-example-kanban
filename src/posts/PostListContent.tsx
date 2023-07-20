@@ -62,28 +62,15 @@ export const PostListContent = () => {
     const destinationIndex = destination.index;
     const destinationStatus = destination.droppableId as Post["status"];
 
-    // compute local state change
-    if (sourcePost.status === destinationStatus) {
-      // moving deal inside the same column
-      let column = postsByStatus[sourcePost.status];
-      column = column.filter((p) => p.index !== source.index);
-      column.splice(destinationIndex, 0, sourcePost);
-      setPostsByStatus({
-        ...postsByStatus,
-        [destinationStatus]: column,
-      });
-    } else {
-      // moving deal across columns
-      let sourceColumn = postsByStatus[sourcePost.status];
-      const destinationColumn = postsByStatus[destinationStatus];
-      sourceColumn = sourceColumn.filter((p) => p.index !== source.index);
-      destinationColumn.splice(destinationIndex, 0, sourcePost);
-      setPostsByStatus({
-        ...postsByStatus,
-        [source.droppableId]: sourceColumn,
-        [destination.droppableId]: destinationColumn,
-      });
-    }
+    // compute local state change synchronously
+    setPostsByStatus(
+      updatePostStatusLocal(
+        sourcePost,
+        destinationIndex,
+        destinationStatus,
+        postsByStatus
+      )
+    );
 
     // trigger the mutation to persist the changes
     mutation.mutateAsync({
@@ -108,4 +95,52 @@ export const PostListContent = () => {
       </Box>
     </DragDropContext>
   );
+};
+
+const updatePostStatusLocal = (
+  sourcePost: Post,
+  destinationIndex: number,
+  destinationStatus: Post["status"],
+  postsByStatus: PostsByStatus
+) => {
+  if (sourcePost.status === destinationStatus) {
+    // moving deal inside the same column
+    const postMovedUp = sourcePost.index > destinationIndex;
+    const column = postsByStatus[sourcePost.status];
+    column.splice(
+      column.findIndex((p) => p.index === sourcePost.index),
+      1
+    );
+    column.splice(
+      (column.some((p) => p.index === destinationIndex)
+        ? column.findIndex((p) => p.index === destinationIndex)
+        : column.length) + (postMovedUp ? 0 : 1),
+      0,
+      sourcePost
+    );
+    return {
+      ...postsByStatus,
+      [destinationStatus]: column,
+    };
+  } else {
+    // moving deal across columns
+    const sourceColumn = postsByStatus[sourcePost.status];
+    const destinationColumn = postsByStatus[destinationStatus];
+    sourceColumn.splice(
+      sourceColumn.findIndex((p) => p.index === sourcePost.index),
+      1
+    );
+    destinationColumn.splice(
+      destinationColumn.some((p) => p.index === destinationIndex)
+        ? destinationColumn.findIndex((p) => p.index === destinationIndex)
+        : destinationColumn.length,
+      0,
+      sourcePost
+    );
+    return {
+      ...postsByStatus,
+      [sourcePost.status]: sourceColumn,
+      [destinationStatus]: destinationColumn,
+    };
+  }
 };
