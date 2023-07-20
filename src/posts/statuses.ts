@@ -16,22 +16,17 @@ export const statusNames: Record<Post["status"], string> = {
   published: "Published",
 };
 
-export const statusChoices = statuses.map((type) => ({
-  id: type,
-  name: statusNames[type],
-}));
-
 export type PostsByStatus = Record<Post["status"], Post[]>;
 
 export const getPostsByStatus = (unorderedPosts: Post[]) => {
-  const postsByStatus: Record<Post["status"], Post[]> = unorderedPosts.reduce(
+  const postsByStatus: PostsByStatus = unorderedPosts.reduce(
     (acc, post) => {
       acc[post.status].push(post);
       return acc;
     },
     statuses.reduce(
       (obj, status) => ({ ...obj, [status]: [] }),
-      {} as Record<Post["status"], Post[]>
+      {} as PostsByStatus
     )
   );
   // order each column by index
