@@ -103,10 +103,9 @@ const updatePostStatusLocal = (
 ) => {
   if (source.status === destination.status) {
     // moving deal inside the same column
-    const postMovedUp = source.index > destination.index;
     const column = postsByStatus[source.status];
     column.splice(source.index, 1);
-    column.splice(destination.index + (postMovedUp ? 0 : 1), 0, sourcePost);
+    column.splice(destination.index, 0, sourcePost);
     return {
       ...postsByStatus,
       [destination.status]: column,
