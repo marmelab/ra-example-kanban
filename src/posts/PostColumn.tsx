@@ -47,8 +47,8 @@ export const PostColumn = ({
             },
           }}
         >
-          {posts.map((post) => (
-            <PostCard key={post.id} post={post} />
+          {posts.map((post, index) => (
+            <PostCard key={post.id} post={post} index={index} />
           ))}
           {droppableProvided.placeholder}
         </Box>

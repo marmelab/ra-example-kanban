@@ -4,9 +4,9 @@ import { Box, Card, CardActions, CardContent, Typography } from "@mui/material";
 import { ShowButton } from "react-admin";
 import type { Post } from ".";
 
-export const PostCard = ({ post }: { post: Post }) => {
+export const PostCard = ({ post, index }: { post: Post; index: number }) => {
   return (
-    <Draggable draggableId={String(post.id)} index={post.index}>
+    <Draggable draggableId={String(post.id)} index={index}>
       {(provided, snapshot) => (
         <Box
           sx={{ marginBottom: 1 }}
