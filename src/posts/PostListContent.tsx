@@ -61,7 +61,10 @@ export const PostListContent = () => {
     const sourcePost = postsByStatus[sourceStatus][source.index]!;
     const destinationPost = postsByStatus[destinationStatus][
       destination.index
-    ] ?? { status: destinationStatus, index: destination.index + 1 };
+    ] ?? {
+      status: destinationStatus,
+      index: undefined, // undefined if dropped after the last item
+    };
 
     // compute local state change synchronously
     setPostsByStatus(
@@ -98,14 +101,17 @@ export const PostListContent = () => {
 const updatePostStatusLocal = (
   sourcePost: Post,
   source: { status: Post["status"]; index: number },
-  destination: { status: Post["status"]; index: number },
+  destination: {
+    status: Post["status"];
+    index?: number; // undefined if dropped after the last item
+  },
   postsByStatus: PostsByStatus
 ) => {
   if (source.status === destination.status) {
     // moving deal inside the same column
     const column = postsByStatus[source.status];
     column.splice(source.index, 1);
-    column.splice(destination.index, 0, sourcePost);
+    column.splice(destination.index ?? column.length + 1, 0, sourcePost);
     return {
       ...postsByStatus,
       [destination.status]: column,
@@ -115,7 +121,11 @@ const updatePostStatusLocal = (
     const sourceColumn = postsByStatus[source.status];
     const destinationColumn = postsByStatus[destination.status];
     sourceColumn.splice(source.index, 1);
-    destinationColumn.splice(destination.index, 0, sourcePost);
+    destinationColumn.splice(
+      destination.index ?? destinationColumn.length + 1,
+      0,
+      sourcePost
+    );
     return {
       ...postsByStatus,
       [source.status]: sourceColumn,

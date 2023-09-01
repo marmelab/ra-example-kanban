@@ -10,7 +10,10 @@ export interface MyDataProvider extends DataProvider {
     // eslint-disable-next-line no-unused-vars
     source: Post,
     // eslint-disable-next-line no-unused-vars
-    destination: { status: Post["status"]; index: number }
+    destination: {
+      status: Post["status"];
+      index?: number; // undefined if dropped after the last item
+    }
   ) => Promise<void>;
 }
 
@@ -29,19 +32,20 @@ export const dataProvider: MyDataProvider = {
       // moving post inside the same column
 
       const columnPosts = postsByStatus[source.status];
+      const destinationIndex = destination.index ?? columnPosts.length + 1;
 
-      if (source.index > destination.index) {
+      if (source.index > destinationIndex) {
         // post moved up, eg
         // dest   src
         //  <------
         // [4, 7, 23, 5]
 
         await Promise.all([
-          // for all posts between destination.index and source.index, increase the index
+          // for all posts between destinationIndex and source.index, increase the index
           ...columnPosts
             .filter(
               (post) =>
-                post.index >= destination.index && post.index < source.index
+                post.index >= destinationIndex && post.index < source.index
             )
             .map((post) =>
               dataProvider.update("posts", {
@@ -53,7 +57,7 @@ export const dataProvider: MyDataProvider = {
           // for the post that was moved, update its index
           dataProvider.update("posts", {
             id: source.id,
-            data: { index: destination.index },
+            data: { index: destinationIndex },
             previousData: source,
           }),
         ]);
@@ -64,11 +68,11 @@ export const dataProvider: MyDataProvider = {
         // [4, 7, 23, 5]
 
         await Promise.all([
-          // for all posts between source.index and destination.index, decrease the index
+          // for all posts between source.index and destinationIndex, decrease the index
           ...columnPosts
             .filter(
               (post) =>
-                post.index <= destination.index && post.index > source.index
+                post.index <= destinationIndex && post.index > source.index
             )
             .map((post) =>
               dataProvider.update("posts", {
@@ -80,7 +84,7 @@ export const dataProvider: MyDataProvider = {
           // for the post that was moved, update its index
           dataProvider.update("posts", {
             id: source.id,
-            data: { index: destination.index },
+            data: { index: destinationIndex },
             previousData: source,
           }),
         ]);
@@ -90,6 +94,8 @@ export const dataProvider: MyDataProvider = {
 
       const sourceColumn = postsByStatus[source.status];
       const destinationColumn = postsByStatus[destination.status];
+      const destinationIndex =
+        destination.index ?? destinationColumn.length + 1;
 
       await Promise.all([
         // decrease index on the posts after the source index in the source columns
@@ -104,7 +110,7 @@ export const dataProvider: MyDataProvider = {
           ),
         // increase index on the posts after the destination index in the destination columns
         ...destinationColumn
-          .filter((post) => post.index >= destination.index)
+          .filter((post) => post.index >= destinationIndex)
           .map((post) =>
             dataProvider.update("posts", {
               id: post.id,
@@ -116,7 +122,7 @@ export const dataProvider: MyDataProvider = {
         dataProvider.update("posts", {
           id: source.id,
           data: {
-            index: destination.index,
+            index: destinationIndex,
             status: destination.status,
           },
           previousData: source,
