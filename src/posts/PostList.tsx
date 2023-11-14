@@ -1,4 +1,5 @@
 import { List, SearchInput } from "react-admin";
+import { useMediaQuery, Typography, Theme } from "@mui/material";
 
 import { PostListContent } from ".";
 
@@ -8,6 +9,7 @@ const postFilters = [
 ];
 
 export const PostList = () => {
+  const isSmall = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   return (
     <List
       filters={postFilters}
@@ -16,7 +18,13 @@ export const PostList = () => {
       pagination={false}
       component="div"
     >
-      <PostListContent />
+      {isSmall ? <FallbackForMobile /> : <PostListContent />}
     </List>
   );
 };
+
+const FallbackForMobile = () => (
+  <Typography mt={3} align="center">
+    The Kanban board demo is not available on mobile
+  </Typography>
+);
